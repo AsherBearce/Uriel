@@ -1,7 +1,9 @@
 package io.github.asherbearce.uriel.commands;
 
-public interface Command {
-    void Execute();
-    String getCommandName();
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
+public interface Command {
+    void Execute(JDA jda, GuildMessageReceivedEvent event, String[] args);
+    String getCommandName();
 }

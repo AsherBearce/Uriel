@@ -1,5 +1,6 @@
 package io.github.asherbearce.uriel;
 
+import io.github.asherbearce.uriel.commands.Command;
 import io.github.asherbearce.uriel.settings.BotSettings;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
@@ -14,7 +15,12 @@ import javax.security.auth.login.LoginException;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import static io.github.asherbearce.uriel.commands.CommandList.*;
 
 public class Main {
     public static final String FILE_NAME = "bot.xml";
@@ -44,6 +50,8 @@ public class Main {
             Thread.sleep(1000);
             firstTimeSetup();
         }
+
+        jda.addEventListener(new EventHandler());
     }
 
     private static void firstTimeSetup(){
@@ -74,7 +82,6 @@ public class Main {
                 System.out.println("There was an error storing your bots token. Please retry.");
             }
         }
-
     }
 
     public static void UpdateSettings(){
@@ -89,9 +96,35 @@ public class Main {
     }
 
     public static class EventHandler extends ListenerAdapter{
-        public void onGuildMessageRecieved(GuildMessageReceivedEvent event){
+        public void onGuildMessageReceived(GuildMessageReceivedEvent event){
             //Parse commands here
+            if (event.getAuthor().isBot()){
+                return;
+            }
+            String prefix = settings.getCommandPrefix();
+            String raw = event.getMessage().getContentRaw();
+            List<String> allMatches = new LinkedList<>();
+            Matcher m = Pattern.compile("\".*\"|\\S+").matcher(raw);
 
+            while (m.find()){
+                allMatches.add(m.group().replaceAll("\"", ""));
+            }
+            String command = allMatches.remove(0);
+
+            String[] args = allMatches.toArray(new String[]{});
+
+            if (command.startsWith(prefix)){
+                for (Command c : Commands){
+
+                    if ((prefix + c.getCommandName()).equalsIgnoreCase(command)){
+                        c.Execute(jda, event, args);
+                        break;
+                    }
+                }
+            }
+            else {
+                //Send an error message
+            }
         }
 
         public void onGuildMemberLeave(GuildMemberLeaveEvent event){
