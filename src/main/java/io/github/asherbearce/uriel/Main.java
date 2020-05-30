@@ -24,7 +24,7 @@ import static io.github.asherbearce.uriel.commands.CommandList.*;
 
 public class Main {
     public static final String FILE_NAME = "bot.xml";
-    private static BotSettings settings;
+    public static BotSettings settings;
     private static TextChannel leaveJoinNotificationChannel;
     private static JDA jda;
 

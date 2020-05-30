@@ -7,8 +7,7 @@ public class CommandList {
     public static List<Command> Commands = new LinkedList<>();
 
     static{
-        //Commands go here
-        //commands.add(new Command());
         Commands.add(new Roast());
+        Commands.add(new Settings());
     }
 }
