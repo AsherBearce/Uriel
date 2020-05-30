@@ -12,7 +12,7 @@ import java.io.*;
 import java.util.Scanner;
 
 public class Main {
-
+    public static String secret = "uwu";
     public static final String FILE_NAME = "bot.xml";
     private static BotSettings settings;
     private static JDA jda;
