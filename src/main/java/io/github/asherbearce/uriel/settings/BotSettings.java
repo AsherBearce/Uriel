@@ -52,12 +52,21 @@ public class BotSettings {
         this.joinLeaveTextChannelID = joinLeaveTextChannelID;
     }
 
+    public String getMutedRoleID() {
+        return mutedRoleID;
+    }
+
+    public void setMutedRoleID(String mutedRoleID) {
+        this.mutedRoleID = mutedRoleID;
+    }
+
     private String botToken;
     private String commandPrefix;
     private String leaveMessage;
     private String joinMessage;
     private boolean showJoinLeaveMessage = false;
     private String joinLeaveTextChannelID;
+    private String mutedRoleID;
 
     public BotSettings(String token){
         botToken = token;

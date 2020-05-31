@@ -9,5 +9,6 @@ public class CommandList {
     static{
         Commands.add(new Roast());
         Commands.add(new Settings());
+        Commands.add(new Mute());
     }
 }

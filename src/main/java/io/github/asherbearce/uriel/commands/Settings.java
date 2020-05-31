@@ -27,6 +27,8 @@ public class Settings implements Command{
             Main.settings.setShowJoinLeaveMessage(false);
         } else if (args[0].equalsIgnoreCase("enablewelcomemessage")){
             Main.settings.setShowJoinLeaveMessage(true);
+        } else if (args[0].equalsIgnoreCase("muterole")){
+            Main.settings.setMutedRoleID(args[1]);
         }
 
         Main.UpdateSettings();

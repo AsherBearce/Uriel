@@ -29,8 +29,8 @@ public class Main {
     public static BotSettings settings;
     private static TextChannel leaveJoinNotificationChannel;
     private static JDA jda;
-    private static final int MESSAGE_FREQUENCY_LIMIT = 20;
-    private static Map<Long, Integer> messageFrequencyTracker;
+    private static final int MESSAGE_FREQUENCY_LIMIT = 4;
+    private static Map<Long, UserModel> users;
 
     public static void main(String[] args) throws Exception{
         File tokenFile = new File(FILE_NAME);
@@ -56,18 +56,21 @@ public class Main {
         }
 
         //Eventually we want to populate the messageTracker from the database
-        messageFrequencyTracker = new HashMap<>();
+        users = new HashMap<>();
 
         for (Member user : jda.getGuilds().get(0).getMembers()){
-            messageFrequencyTracker.put(user.getIdLong(), 0);
+            UserModel model = new UserModel();
+            model.username = user.getEffectiveName();
+            model.userID = user.getIdLong();
+            model.spamWarnings = 0;
+            users.put(user.getIdLong(), model);
         }
 
         (new Thread(() -> {
-            //TODO FIX THIS
             while (true) {
                 try {
-                    Thread.sleep(60000);
-                    messageFrequencyTracker.replaceAll((k, v)-> v = 0);
+                    Thread.sleep(5000);
+                    users.replaceAll((k, v)-> {v.currentMessageFrequency = 0; return v;});
                 }
                 catch (InterruptedException e){
                     e.printStackTrace();
@@ -99,7 +102,7 @@ public class Main {
                 encoder.close();
             }
             catch (LoginException e){
-                System.out.println(e.getMessage());
+                e.printStackTrace();
                 System.out.println("An error occurred while logging in. It may be that the token entered was invalid.");
             }
             catch (IOException e){
@@ -151,14 +154,16 @@ public class Main {
                 }
             }
             else {
-                //Track message frequency
                 long authID = event.getAuthor().getIdLong();
-                int currentFrequency = messageFrequencyTracker.get(authID) + 1;
-                messageFrequencyTracker.replace(authID, currentFrequency);
+                UserModel user = users.get(authID);
+                user.currentMessageFrequency += 1;
+                users.replace(authID, user);
 
-                if (currentFrequency >= MESSAGE_FREQUENCY_LIMIT){
+                if (user.currentMessageFrequency >= MESSAGE_FREQUENCY_LIMIT){
                     event.getChannel().sendMessage("Hey! <@" + authID + "> Stop spamming! This is a warning. Next time you will be muted!").queue();
-                    messageFrequencyTracker.replace(authID, 0);
+                    user.currentMessageFrequency = 0;
+                    user.spamWarnings += 1;
+                    users.replace(authID, user);
                 }
             }
         }
