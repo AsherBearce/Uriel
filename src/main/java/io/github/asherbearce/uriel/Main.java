@@ -1,10 +1,12 @@
 package io.github.asherbearce.uriel;
 
 import io.github.asherbearce.uriel.commands.Command;
+import io.github.asherbearce.uriel.models.UserModel;
 import io.github.asherbearce.uriel.settings.BotSettings;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
@@ -15,18 +17,20 @@ import javax.security.auth.login.LoginException;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import static io.github.asherbearce.uriel.commands.CommandList.*;
+//TODO revise mechanism for anti-spam
 
 public class Main {
     public static final String FILE_NAME = "bot.xml";
     public static BotSettings settings;
     private static TextChannel leaveJoinNotificationChannel;
     private static JDA jda;
+    private static final int MESSAGE_FREQUENCY_LIMIT = 20;
+    private static Map<Long, Integer> messageFrequencyTracker;
 
     public static void main(String[] args) throws Exception{
         File tokenFile = new File(FILE_NAME);
@@ -50,6 +54,26 @@ public class Main {
             Thread.sleep(1000);
             firstTimeSetup();
         }
+
+        //Eventually we want to populate the messageTracker from the database
+        messageFrequencyTracker = new HashMap<>();
+
+        for (Member user : jda.getGuilds().get(0).getMembers()){
+            messageFrequencyTracker.put(user.getIdLong(), 0);
+        }
+
+        (new Thread(() -> {
+            //TODO FIX THIS
+            while (true) {
+                try {
+                    Thread.sleep(60000);
+                    messageFrequencyTracker.replaceAll((k, v)-> v = 0);
+                }
+                catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
+        })).start();
 
         jda.addEventListener(new EventHandler());
     }
@@ -103,27 +127,39 @@ public class Main {
             }
             String prefix = settings.getCommandPrefix();
             String raw = event.getMessage().getContentRaw();
-            List<String> allMatches = new LinkedList<>();
-            Matcher m = Pattern.compile("\".*\"|\\S+").matcher(raw);
+            if (raw.startsWith(prefix)) {
+                List<String> allMatches = new LinkedList<>();
+                Matcher m = Pattern.compile("\".*\"|\\S+").matcher(raw);
 
-            while (m.find()){
-                allMatches.add(m.group().replaceAll("\"", ""));
-            }
-            String command = allMatches.remove(0);
+                while (m.find()) {
+                    allMatches.add(m.group().replaceAll("\"", ""));
+                }
+                String command = allMatches.remove(0);
 
-            String[] args = allMatches.toArray(new String[]{});
+                String[] args = allMatches.toArray(new String[]{});
 
-            if (command.startsWith(prefix)){
-                for (Command c : Commands){
+                if (command.startsWith(prefix)) {
+                    for (Command c : Commands) {
 
-                    if ((prefix + c.getCommandName()).equalsIgnoreCase(command)){
-                        c.Execute(jda, event, args);
-                        break;
+                        if ((prefix + c.getCommandName()).equalsIgnoreCase(command)) {
+                            c.Execute(jda, event, args);
+                            break;
+                        }
                     }
+                } else {
+                    //Send an error message
                 }
             }
             else {
-                //Send an error message
+                //Track message frequency
+                long authID = event.getAuthor().getIdLong();
+                int currentFrequency = messageFrequencyTracker.get(authID) + 1;
+                messageFrequencyTracker.replace(authID, currentFrequency);
+
+                if (currentFrequency >= MESSAGE_FREQUENCY_LIMIT){
+                    event.getChannel().sendMessage("Hey! <@" + authID + "> Stop spamming! This is a warning. Next time you will be muted!").queue();
+                    messageFrequencyTracker.replace(authID, 0);
+                }
             }
         }
 

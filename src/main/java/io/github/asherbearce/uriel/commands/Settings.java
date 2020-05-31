@@ -12,6 +12,7 @@ public class Settings implements Command{
         return "Settings";
     }
 
+    //TODO Convert to switch statement
     @Override
     public void Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
         if (args[0].equalsIgnoreCase("prefix")){
