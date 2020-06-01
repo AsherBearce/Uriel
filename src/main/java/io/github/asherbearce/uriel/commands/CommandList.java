@@ -11,6 +11,8 @@ public class CommandList {
         Commands.add(new Settings());
         Commands.add(new Mute());
         Commands.add(new Unmute());
+        Commands.add(new Purge());
+        Commands.add(new Lockdown());
     }
 
     public static Command getCommandByName(String commandName){

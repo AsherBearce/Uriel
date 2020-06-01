@@ -8,6 +8,7 @@ import io.github.asherbearce.uriel.settings.BotSettings;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -34,6 +35,7 @@ public class Main {
     private static JDA jda;
     private static final int MESSAGE_FREQUENCY_LIMIT = 4;
     private static Map<Long, UserModel> users;
+    public static boolean isUnderLockdown = false;
 
     public static void main(String[] args) throws Exception{
         File tokenFile = new File(FILE_NAME);
@@ -131,6 +133,7 @@ public class Main {
             if (event.getAuthor().isBot()){
                 return;
             }
+
             String prefix = settings.getCommandPrefix();
             String raw = event.getMessage().getContentRaw();
             if (raw.startsWith(prefix)) {
