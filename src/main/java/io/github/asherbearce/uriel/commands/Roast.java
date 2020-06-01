@@ -10,7 +10,7 @@ public class Roast implements Command {
     }
 
     @Override
-    public void Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
+    public void Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {
         event.getChannel().sendMessage("Sam is a fucking bitch ass!").queue();
     }
 }

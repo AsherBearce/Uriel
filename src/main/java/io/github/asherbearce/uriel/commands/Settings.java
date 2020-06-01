@@ -14,7 +14,7 @@ public class Settings implements Command{
 
     //TODO Convert to switch statement
     @Override
-    public void Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
+    public void Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {
         if (args[0].equalsIgnoreCase("prefix")){
             Main.settings.setCommandPrefix(args[1]);
         } else if (args[0].equalsIgnoreCase("leavemessage")){

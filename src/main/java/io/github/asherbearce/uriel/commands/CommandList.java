@@ -10,5 +10,15 @@ public class CommandList {
         Commands.add(new Roast());
         Commands.add(new Settings());
         Commands.add(new Mute());
+        Commands.add(new Unmute());
+    }
+
+    public static Command getCommandByName(String commandName){
+        for (Command c : Commands){
+            if (c.getCommandName().equalsIgnoreCase(commandName)){
+                return c;
+            }
+        }
+        return null;
     }
 }

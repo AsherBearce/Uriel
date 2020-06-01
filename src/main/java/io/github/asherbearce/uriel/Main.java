@@ -1,12 +1,15 @@
 package io.github.asherbearce.uriel;
 
 import io.github.asherbearce.uriel.commands.Command;
+import io.github.asherbearce.uriel.commands.CommandList;
+import io.github.asherbearce.uriel.commands.Mute;
 import io.github.asherbearce.uriel.models.UserModel;
 import io.github.asherbearce.uriel.settings.BotSettings;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
@@ -160,10 +163,19 @@ public class Main {
                 users.replace(authID, user);
 
                 if (user.currentMessageFrequency >= MESSAGE_FREQUENCY_LIMIT){
-                    event.getChannel().sendMessage("Hey! <@" + authID + "> Stop spamming! This is a warning. Next time you will be muted!").queue();
-                    user.currentMessageFrequency = 0;
                     user.spamWarnings += 1;
+                    user.currentMessageFrequency = 0;
+
                     users.replace(authID, user);
+
+                    if (user.spamWarnings > 1){
+                        Mute.muteUser(event.getMember(), event.getGuild(), 0, 10);
+                        user.spamWarnings = 0;
+                        event.getChannel().sendMessage("<@" + authID + "> has been muted for 10 minutes for spamming.").queue();
+                    }
+                    else {
+                        event.getChannel().sendMessage("Hey! <@" + authID + "> Stop spamming! This is a warning. Next time you will be muted!").queue();
+                    }
                 }
             }
         }
