@@ -4,8 +4,6 @@ import io.github.asherbearce.uriel.Main;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-
-import javax.xml.transform.Result;
 import java.sql.*;
 
 public class Database {
@@ -28,19 +26,26 @@ public class Database {
     private void initialize() throws SQLException{
         JDA jda = Main.getJda();
         Statement createUserTable = connection.createStatement();
+        Statement createWarningsTable = connection.createStatement();
         createUserTable.executeUpdate(
                     "CREATE TABLE user(" +
                         "user_id TEXT PRIMARY KEY, " +
-                        "username TEXT, " +
-                        "warnings INTEGER);");
-        PreparedStatement prep = connection.prepareStatement("INSERT INTO user values(?, ?, ?);");
+                        "username TEXT);");
+
+        createWarningsTable.executeUpdate(
+                    "CREATE TABLE warnings (" +
+                        "warning_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "date_issued DATETIME, " +
+                        "issuer_id TEXT, " +
+                        "reason TEXT);");
+
+        PreparedStatement prep = connection.prepareStatement("INSERT INTO user values(?, ?);");
 
         for (Guild guild : jda.getGuilds()) {
             for (Member member : guild.getMembers()) {
                 if (!member.getUser().isBot()){
                     prep.setString(1, member.getId());
                     prep.setString(2, member.getEffectiveName());
-                    prep.setInt(3, 0);//Everyone gets a fresh start :D
                     prep.execute();
                 }
             }

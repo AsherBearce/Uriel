@@ -2,6 +2,7 @@ package io.github.asherbearce.uriel;
 
 import io.github.asherbearce.uriel.commands.Command;
 import io.github.asherbearce.uriel.commands.Mute;
+import io.github.asherbearce.uriel.commands.Warn;
 import io.github.asherbearce.uriel.database.Database;
 import io.github.asherbearce.uriel.models.UserModel;
 import io.github.asherbearce.uriel.settings.BotSettings;
@@ -26,6 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import static io.github.asherbearce.uriel.commands.CommandList.*;
 //TODO revise mechanism for anti-spam
+//TODO revise warning messages to use string formatting instead of concatenation
 
 public class Main {
     public static final String FILE_NAME = "bot.xml";
@@ -69,7 +71,6 @@ public class Main {
 
         for (Member user : jda.getGuilds().get(0).getMembers()){
             UserModel model = new UserModel();
-            model.username = user.getEffectiveName();
             model.userID = user.getIdLong();
             model.spamWarnings = 0;
             users.put(user.getIdLong(), model);
@@ -187,7 +188,8 @@ public class Main {
                     if (user.spamWarnings > 1){
                         Mute.muteUser(event.getMember(), event.getGuild(), 0, 10);
                         user.spamWarnings = 0;
-                        event.getChannel().sendMessage("<@" + authID + "> has been muted for 10 minutes for spamming.").queue();
+                        Warn.giveUserWarn(event.getMember(), event.getGuild(), new Date(), jda.getSelfUser().getId(), "Spamming in ChannelId:" + event.getChannel().getId());
+                        event.getChannel().sendMessage("A warning has been issued to <@" + authID + ">, and has been muted for 10 minutes for spamming.").queue();
                     }
                     else {
                         event.getChannel().sendMessage("Hey! <@" + authID + "> Stop spamming! This is a warning. Next time you will be muted!").queue();

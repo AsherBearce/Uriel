@@ -13,6 +13,7 @@ public class CommandList {
         Commands.add(new Unmute());
         Commands.add(new Purge());
         Commands.add(new Lockdown());
+        Commands.add(new Warn());
     }
 
     public static Command getCommandByName(String commandName){

@@ -1,7 +1,7 @@
 package io.github.asherbearce.uriel.models;
 
+//This class can probably go
 public class UserModel {
-    public String username;
     public long userID;
     public int spamWarnings;
     public int currentMessageFrequency;
