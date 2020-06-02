@@ -1,16 +1,14 @@
 package io.github.asherbearce.uriel;
 
 import io.github.asherbearce.uriel.commands.Command;
-import io.github.asherbearce.uriel.commands.CommandList;
 import io.github.asherbearce.uriel.commands.Mute;
+import io.github.asherbearce.uriel.database.Database;
 import io.github.asherbearce.uriel.models.UserModel;
 import io.github.asherbearce.uriel.settings.BotSettings;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
@@ -21,6 +19,7 @@ import javax.security.auth.login.LoginException;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -36,6 +35,11 @@ public class Main {
     private static final int MESSAGE_FREQUENCY_LIMIT = 4;
     private static Map<Long, UserModel> users;
     public static boolean isUnderLockdown = false;
+    public static Database db;
+
+    public static JDA getJda(){
+        return jda;
+    }
 
     public static void main(String[] args) throws Exception{
         File tokenFile = new File(FILE_NAME);
@@ -84,6 +88,15 @@ public class Main {
         })).start();
 
         jda.addEventListener(new EventHandler());
+
+        //Create our database
+        try {
+            db = Database.getDatabase();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }catch (ClassNotFoundException e){
+
+        }
     }
 
     private static void firstTimeSetup(){
