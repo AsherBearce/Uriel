@@ -30,7 +30,7 @@ public class Database {
                     "INSERT INTO warnings (" +
                         "date_issued, issuer_id, reason, warned_user_id) " +
                         "VALUES(?, ?, ?, ?);");
-        getWarningsStatement = connection.prepareStatement("SELECT * FROM warnings WHERE warned_user_id == ?);");
+        getWarningsStatement = connection.prepareStatement("SELECT * FROM warnings WHERE warned_user_id == ?;");
     }
 
     private void initialize() throws SQLException{

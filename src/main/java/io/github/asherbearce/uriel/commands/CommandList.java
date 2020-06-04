@@ -14,6 +14,7 @@ public class CommandList {
         Commands.add(new Purge());
         Commands.add(new Lockdown());
         Commands.add(new Warn());
+        Commands.add(new GetWarns());
     }
 
     public static Command getCommandByName(String commandName){
