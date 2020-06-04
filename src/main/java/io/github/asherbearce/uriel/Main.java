@@ -69,6 +69,10 @@ public class Main {
         //Eventually we want to populate the messageTracker from the database
         users = new HashMap<>();
 
+        while (jda.getGuilds().isEmpty()){
+            //Keep trying to retrieve the users
+        }
+
         for (Member user : jda.getGuilds().get(0).getMembers()){
             UserModel model = new UserModel();
             model.userID = user.getIdLong();
