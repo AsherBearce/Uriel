@@ -24,4 +24,9 @@ public class Purge implements Command {
     public String getDescription() {
         return "Deletes the number of messages specified.";
     }
+
+    @Override
+    public String getArgumentList() {
+        return "```prefix``` **Purge** ```[Number of messages to delete]```";
+    }
 }

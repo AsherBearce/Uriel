@@ -59,4 +59,9 @@ public class Lockdown implements Command{
         return "Locks down the entire server, making it impossible for users to type, with the exception of moderators " +
                 "and admins.";
     }
+
+    @Override
+    public String getArgumentList() {
+        return "```prefix``` **Lockdown** \"Lift\"(Lifts the lockdown)(optional)";
+    }
 }

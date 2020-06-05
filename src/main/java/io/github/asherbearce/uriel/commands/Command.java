@@ -7,4 +7,5 @@ public interface Command {
     void Execute(JDA jda, GuildMessageReceivedEvent event, String[] args);
     String getCommandName();
     String getDescription();
+    String getArgumentList();
 }

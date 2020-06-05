@@ -43,6 +43,11 @@ public class Mute implements Command {
         return "Mutes a particular user, disabling their ability to type, or connect from any voice channel.";
     }
 
+    @Override
+    public String getArgumentList() {
+        return "```prefix``` **Mute** ```user mention or user ID``` ```[Time formatted as dd:hh:mm]```(Mutes the user for a set period of time)(optional)";
+    }
+
     public static void muteUser(Member member, Guild guild){
         Role mutedRole = guild.getRoleById(Main.settings.getMutedRoleID());
         List<Role> unmodifiedRoles = member.getRoles();

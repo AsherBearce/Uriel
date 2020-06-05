@@ -5,8 +5,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-
-import java.sql.SQLException;
 import java.util.Date;
 
 public class Warn implements Command {
@@ -26,6 +24,11 @@ public class Warn implements Command {
     @Override
     public String getDescription() {
         return "Warns a user. Sends the user a dm telling them why they were warned.";
+    }
+
+    @Override
+    public String getArgumentList() {
+        return "```prefix``` **Warn** ```user mention or user ID``` ```[Reason]```";
     }
 
     public static void giveUserWarn(Member member, Guild guild, Date date, String issuerID, String reason){

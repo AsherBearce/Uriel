@@ -48,4 +48,9 @@ public class GetWarns implements Command {
     public String getDescription() {
         return "Gets the warns of a particular user.";
     }
+
+    @Override
+    public String getArgumentList() {
+        return "```prefix``` **GetWarns** ```user mention or user ID```";
+    }
 }

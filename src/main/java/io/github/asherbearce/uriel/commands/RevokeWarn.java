@@ -26,4 +26,9 @@ public class RevokeWarn implements Command {
     public String getDescription() {
         return "Removes a warning from the database, given a warning ID.";
     }
+
+    @Override
+    public String getArgumentList() {
+        return "```prefix``` **RevokeWarn** ```[Warning id]```";
+    }
 }
