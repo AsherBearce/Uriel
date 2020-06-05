@@ -14,6 +14,7 @@ public class Database {
     private static Database instance;
     private PreparedStatement addWarningStatement;
     private PreparedStatement getWarningsStatement;
+    private PreparedStatement deleteWarningStatement;
 
     private Database() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
@@ -31,6 +32,7 @@ public class Database {
                         "date_issued, issuer_id, reason, warned_user_id) " +
                         "VALUES(?, ?, ?, ?);");
         getWarningsStatement = connection.prepareStatement("SELECT * FROM warnings WHERE warned_user_id == ?;");
+        deleteWarningStatement = connection.prepareStatement("DELETE FROM warnings WHERE warning_id == ?;");
     }
 
     private void initialize() throws SQLException{
@@ -57,6 +59,11 @@ public class Database {
     public ResultSet getAllUserWarnings(String warnedUserID) throws SQLException{
         getWarningsStatement.setString(1, warnedUserID);
         return getWarningsStatement.executeQuery();
+    }
+
+    public void removeUserWarning(int userId) throws SQLException{
+        deleteWarningStatement.setInt(1, userId);
+        deleteWarningStatement.executeUpdate();
     }
 
     public static Database getDatabase() throws ClassNotFoundException, SQLException{
