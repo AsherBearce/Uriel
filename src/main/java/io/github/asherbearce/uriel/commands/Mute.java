@@ -38,6 +38,11 @@ public class Mute implements Command {
         return "Mute";
     }
 
+    @Override
+    public String getDescription() {
+        return "Mutes a particular user, disabling their ability to type, or connect from any voice channel.";
+    }
+
     public static void muteUser(Member member, Guild guild){
         Role mutedRole = guild.getRoleById(Main.settings.getMutedRoleID());
         List<Role> unmodifiedRoles = member.getRoles();

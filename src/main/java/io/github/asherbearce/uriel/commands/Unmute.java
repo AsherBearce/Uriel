@@ -25,6 +25,11 @@ public class Unmute implements Command {
         return "Unmute";
     }
 
+    @Override
+    public String getDescription() {
+        return "Gives a user the ability to type and connect to voice channels.";
+    }
+
     public static void unmuteUser(Member member, Guild guild){
         Role mutedRole = guild.getRoleById(Main.settings.getMutedRoleID());
         List<Role> unmodifiedRoles = member.getRoles();

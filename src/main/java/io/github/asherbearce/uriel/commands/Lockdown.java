@@ -53,4 +53,10 @@ public class Lockdown implements Command{
     public String getCommandName() {
         return "Lockdown";
     }
+
+    @Override
+    public String getDescription() {
+        return "Locks down the entire server, making it impossible for users to type, with the exception of moderators " +
+                "and admins.";
+    }
 }

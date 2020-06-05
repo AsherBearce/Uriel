@@ -9,6 +9,8 @@ import io.github.asherbearce.uriel.settings.BotSettings;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
@@ -65,7 +67,8 @@ public class Main {
             Thread.sleep(1000);
             firstTimeSetup();
         }
-
+        jda.getPresence().setActivity(Activity.watching("Type " + Main.settings.getCommandPrefix() + "Help for help!"));
+        //TODO Automatically change the message to the correct prefix
         //Eventually we want to populate the messageTracker from the database
         users = new HashMap<>();
 

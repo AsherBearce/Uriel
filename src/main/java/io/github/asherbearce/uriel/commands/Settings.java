@@ -12,6 +12,11 @@ public class Settings implements Command{
         return "Settings";
     }
 
+    @Override
+    public String getDescription() {
+        return "Allows a user to change general settings for this bot.";
+    }
+
     //TODO Convert to switch statement
     @Override
     public void Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {

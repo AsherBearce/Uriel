@@ -43,4 +43,9 @@ public class GetWarns implements Command {
     public String getCommandName() {
         return "GetWarns";
     }
+
+    @Override
+    public String getDescription() {
+        return "Gets the warns of a particular user.";
+    }
 }

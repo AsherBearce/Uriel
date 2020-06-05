@@ -23,6 +23,11 @@ public class Warn implements Command {
         return "Warn";
     }
 
+    @Override
+    public String getDescription() {
+        return "Warns a user. Sends the user a dm telling them why they were warned.";
+    }
+
     public static void giveUserWarn(Member member, Guild guild, Date date, String issuerID, String reason){
         member.getUser().openPrivateChannel().complete().sendMessage("You have been warned for " + reason.toLowerCase()).queue();
         try {

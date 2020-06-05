@@ -10,6 +10,11 @@ public class Roast implements Command {
     }
 
     @Override
+    public String getDescription() {
+        return "A fun test command used to roast Sam.";
+    }
+
+    @Override
     public void Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {
         event.getChannel().sendMessage("Sam is a fucking bitch ass!").queue();
     }

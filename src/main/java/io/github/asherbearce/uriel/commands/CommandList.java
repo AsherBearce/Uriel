@@ -16,6 +16,7 @@ public class CommandList {
         Commands.add(new Warn());
         Commands.add(new GetWarns());
         Commands.add(new RevokeWarn());
+        Commands.add(new Help());
     }
 
     public static Command getCommandByName(String commandName){

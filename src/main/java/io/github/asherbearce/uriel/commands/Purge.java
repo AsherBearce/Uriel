@@ -19,4 +19,9 @@ public class Purge implements Command {
     public String getCommandName() {
         return "Purge";
     }
+
+    @Override
+    public String getDescription() {
+        return "Deletes the number of messages specified.";
+    }
 }
