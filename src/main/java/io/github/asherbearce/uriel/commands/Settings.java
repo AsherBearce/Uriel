@@ -24,6 +24,16 @@ public class Settings implements Command{
     }
 
     @Override
+    public int getMaxArguments() {
+        return 0;
+    }
+
+    @Override
+    public int getMinArguments() {
+        return 2;
+    }
+
+    @Override
     public void Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {
 
         if (args.length > 0) {
@@ -40,9 +50,14 @@ public class Settings implements Command{
                 case ("welcomemessagechannelid"):
                     Main.settings.setJoinLeaveTextChannelID(args[1]);
                     break;
-                case ("sendwelcomemessage"):
-                    Main.settings.setShowJoinLeaveMessage(Boolean.valueOf(args[1].toLowerCase()));
+                case ("sendwelcomemessage"): {
+                    try {
+                        Main.settings.setShowJoinLeaveMessage(Boolean.valueOf(args[1].toLowerCase()));
+                    } catch (Exception e){
+                        Main.sendErrormesage("input not formatted correctly. Must either be 'true' or 'false'.", event.getChannel());
+                    }
                     break;
+                }
                 case ("muterole"):
                     Main.settings.setMutedRoleID(args[1]);
                     break;

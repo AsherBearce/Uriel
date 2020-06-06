@@ -15,7 +15,6 @@ public class Mute implements Command {
 
     @Override
     public void Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {
-        //TODO Clean up is needed here
         List<Member> members = event.getMessage().getMentionedMembers();
         final Member mentioned = members.isEmpty() ? event.getGuild().getMemberById(args[0]) : members.get(0);
 
@@ -23,8 +22,16 @@ public class Mute implements Command {
 
             String time = args[1];
             String[] split = time.split(":");
-            int hours = Integer.valueOf(split[0]);
-            int minutes = Integer.valueOf(split[1]);
+            int hours;
+            int minutes;
+
+            try {
+                hours = Integer.valueOf(split[0]);
+                minutes = Integer.valueOf(split[1]);
+            } catch (Exception e){
+                Main.sendErrormesage("The time given was not formatted correctly. It must be formatted as hh:mm.", event.getChannel());
+                return;
+            }
 
             muteUser(mentioned, event.getGuild(), hours, minutes);
         }
@@ -46,6 +53,16 @@ public class Mute implements Command {
     @Override
     public String getArgumentList() {
         return "```prefix``` **Mute** ```user mention or user ID``` ```[Time formatted as dd:hh:mm]```(Mutes the user for a set period of time)(optional)";
+    }
+
+    @Override
+    public int getMaxArguments() {
+        return 2;
+    }
+
+    @Override
+    public int getMinArguments() {
+        return 1;
     }
 
     public static void muteUser(Member member, Guild guild){

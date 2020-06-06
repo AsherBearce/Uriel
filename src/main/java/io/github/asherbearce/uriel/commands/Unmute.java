@@ -17,7 +17,11 @@ public class Unmute implements Command {
         List<Member> members = event.getMessage().getMentionedMembers();
         final Member mentioned = members.isEmpty() ? event.getGuild().getMemberById(args[0]) : members.get(0);
 
-        unmuteUser(mentioned, event.getGuild());
+        if (mentioned != null) {
+            unmuteUser(mentioned, event.getGuild());
+        } else {
+            Main.sendErrormesage("This user does not exist.", event.getChannel());
+        }
     }
 
     @Override
@@ -33,6 +37,16 @@ public class Unmute implements Command {
     @Override
     public String getArgumentList() {
         return "```prefix``` **UnMute** ``` ```user mention or user ID```";
+    }
+
+    @Override
+    public int getMaxArguments() {
+        return 1;
+    }
+
+    @Override
+    public int getMinArguments() {
+        return 1;
     }
 
     public static void unmuteUser(Member member, Guild guild){

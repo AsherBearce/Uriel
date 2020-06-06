@@ -6,10 +6,7 @@ import io.github.asherbearce.uriel.commands.Warn;
 import io.github.asherbearce.uriel.database.Database;
 import io.github.asherbearce.uriel.models.UserModel;
 import io.github.asherbearce.uriel.settings.BotSettings;
-import net.dv8tion.jda.api.AccountType;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -22,6 +19,7 @@ import javax.security.auth.login.LoginException;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
+import java.nio.channels.Channel;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
@@ -148,6 +146,14 @@ public class Main {
         }
     }
 
+    public static void sendErrormesage(String errorMessage, TextChannel channel){
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("An error has occurred!");
+        embedBuilder.setDescription(errorMessage);
+
+        channel.sendMessage(embedBuilder.build()).queue();
+    }
+
     public static class EventHandler extends ListenerAdapter{
         public void onGuildMessageReceived(GuildMessageReceivedEvent event){
             //Parse commands here
@@ -169,10 +175,18 @@ public class Main {
                 String[] args = allMatches.toArray(new String[]{});
 
                 if (command.startsWith(prefix)) {
+                    //TODO use the getCommandByName method here
                     for (Command c : Commands) {
 
                         if ((prefix + c.getCommandName()).equalsIgnoreCase(command)) {
-                            c.Execute(jda, event, args);
+                            if (c.getMinArguments() <= args.length && c.getMaxArguments() >= args.length) {
+                                c.Execute(jda, event, args);
+                            }
+                            else {
+                                sendErrormesage("Invalid number of arguments: " + args.length +
+                                        ", this command takes at most " + c.getMaxArguments() + ", and at least " +
+                                        c.getMinArguments() + " arguments. See the help command for assistance.", event.getChannel());
+                            }
                             break;
                         }
                     }

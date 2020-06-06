@@ -8,4 +8,6 @@ public interface Command {
     String getCommandName();
     String getDescription();
     String getArgumentList();
+    int getMaxArguments();
+    int getMinArguments();
 }

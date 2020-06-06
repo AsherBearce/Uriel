@@ -1,6 +1,8 @@
 package io.github.asherbearce.uriel.commands;
 
+import io.github.asherbearce.uriel.Main;
 import io.github.asherbearce.uriel.database.Database;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -13,7 +15,11 @@ public class Warn implements Command {
     public void Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
         Member userToWarn = !event.getMessage().getMentionedMembers().isEmpty() ?
                 event.getMessage().getMentionedMembers().get(0) : event.getGuild().getMemberById(args[0]);
-        giveUserWarn(userToWarn, event.getGuild(), new Date(), event.getMember().getId(), args[1].toLowerCase());
+        if (userToWarn != null) {
+            giveUserWarn(userToWarn, event.getGuild(), new Date(), event.getMember().getId(), args[1].toLowerCase());
+        } else {
+            Main.sendErrormesage("This user does not exist.", event.getChannel());
+        }
     }
 
     @Override
@@ -31,8 +37,27 @@ public class Warn implements Command {
         return "```prefix``` **Warn** ```user mention or user ID``` ```[Reason]```";
     }
 
+    @Override
+    public int getMaxArguments() {
+        return 2;
+    }
+
+    @Override
+    public int getMinArguments() {
+        return 2;
+    }
+
     public static void giveUserWarn(Member member, Guild guild, Date date, String issuerID, String reason){
-        member.getUser().openPrivateChannel().complete().sendMessage("You have been warned for " + reason.toLowerCase()).queue();
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("You have been warned!");
+        embedBuilder.addField("Reason: ", reason, false);
+        embedBuilder.addField("Date: ", date.toString(), false);
+        embedBuilder.addField("Issuer: ", guild.getMemberById(issuerID).getEffectiveName(), false);
+        embedBuilder.setColor(0xe3d57d);
+        embedBuilder.setDescription("This warning has been recorded in our database. If you feel that this warning has been wrongfully given to you, please contact a moderator.");
+
+
+        member.getUser().openPrivateChannel().complete().sendMessage(embedBuilder.build()).queue();
         try {
             Database db = Database.getDatabase();
             db.addWarning(new Date(), issuerID, reason, member.getId());

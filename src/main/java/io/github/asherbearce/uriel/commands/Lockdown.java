@@ -64,4 +64,14 @@ public class Lockdown implements Command{
     public String getArgumentList() {
         return "```prefix``` **Lockdown** \"Lift\"(Lifts the lockdown)(optional)";
     }
+
+    @Override
+    public int getMaxArguments() {
+        return 1;
+    }
+
+    @Override
+    public int getMinArguments() {
+        return 0;
+    }
 }

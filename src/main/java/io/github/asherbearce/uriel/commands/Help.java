@@ -56,5 +56,15 @@ public class Help implements Command {
         return "```prefix``` **Help** ```\"Commands\" or [Command Name Here]```";
     }
 
+    @Override
+    public int getMaxArguments() {
+        return 1;
+    }
+
+    @Override
+    public int getMinArguments() {
+        return 0;
+    }
+
 
 }

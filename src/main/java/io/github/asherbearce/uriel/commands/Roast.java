@@ -20,6 +20,16 @@ public class Roast implements Command {
     }
 
     @Override
+    public int getMaxArguments() {
+        return 0;
+    }
+
+    @Override
+    public int getMinArguments() {
+        return 0;
+    }
+
+    @Override
     public void Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {
         event.getChannel().sendMessage("Sam is a fucking bitch ass!").queue();
     }
