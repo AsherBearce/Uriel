@@ -67,7 +67,7 @@ public class GetWarns implements Command {
 
     @Override
     public String getArgumentList() {
-        return "```prefix``` **GetWarns** ```user mention or user ID```";
+        return "```prefix``` **GetWarns** ```[user mention or user ID]```";
     }
 
     @Override

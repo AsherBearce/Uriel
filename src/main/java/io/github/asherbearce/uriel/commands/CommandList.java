@@ -17,6 +17,8 @@ public class CommandList {
         Commands.add(new GetWarns());
         Commands.add(new RevokeWarn());
         Commands.add(new Help());
+        Commands.add(new Ban());
+        Commands.add(new Unban());
     }
 
     public static Command getCommandByName(String commandName){
