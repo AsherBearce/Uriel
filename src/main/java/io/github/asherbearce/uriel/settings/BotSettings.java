@@ -60,6 +60,14 @@ public class BotSettings {
         this.mutedRoleID = mutedRoleID;
     }
 
+    public String getLogChannelID() {
+        return logChannelID;
+    }
+
+    public void setLogChannelID(String logChannelID) {
+        this.logChannelID = logChannelID;
+    }
+
     private String botToken;
     private String commandPrefix;
     private String leaveMessage;
@@ -67,6 +75,7 @@ public class BotSettings {
     private boolean showJoinLeaveMessage = false;
     private String joinLeaveTextChannelID;
     private String mutedRoleID;
+    private String logChannelID;
 
     public BotSettings(String token){
         botToken = token;

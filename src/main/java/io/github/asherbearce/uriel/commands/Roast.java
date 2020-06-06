@@ -30,7 +30,8 @@ public class Roast implements Command {
     }
 
     @Override
-    public void Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {
+    public String Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {
         event.getChannel().sendMessage("Sam is a fucking bitch ass!").queue();
+        return "Roasted Sam";
     }
 }

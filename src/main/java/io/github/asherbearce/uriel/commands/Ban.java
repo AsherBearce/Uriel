@@ -10,9 +10,11 @@ import java.util.List;
 
 public class Ban implements Command {
     @Override
-    public void Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
+    public String Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
         List<Member> members = event.getMessage().getMentionedMembers();
         Member mentioned = members.isEmpty() ? event.getGuild().getMemberById(args[0]) : members.get(0);
+
+        String returnValue = "Command Error";
 
         if (mentioned != null){
             EmbedBuilder embedBuilder = new EmbedBuilder();
@@ -22,10 +24,15 @@ public class Ban implements Command {
             embedBuilder.setColor(0x8b0000);
             mentioned.getUser().openPrivateChannel().complete().sendMessage(embedBuilder.build()).queue();
 
+
+            returnValue = "Banned " + mentioned.getEffectiveName() + " Reason: " + args[1];
+
             event.getGuild().ban(mentioned.getId(), 0, args[1]).complete();
         } else {
-            Main.sendErrormesage("This user does not exist.", event.getChannel());
+            Main.sendErrorMessage("This user does not exist.", event.getChannel());
         }
+
+        return returnValue;
     }
 
     @Override

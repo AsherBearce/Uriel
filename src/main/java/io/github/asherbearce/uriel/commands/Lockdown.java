@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Lockdown implements Command{
     @Override
-    public void Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
+    public String Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
         List<Permission> perms = new LinkedList<>();
         perms.add(Permission.MESSAGE_WRITE);
         perms.add(Permission.MESSAGE_ADD_REACTION);
@@ -22,7 +22,7 @@ public class Lockdown implements Command{
         if (args.length == 0) {
             if (Main.isUnderLockdown){
                 event.getChannel().sendMessage("The server is already on lockdown.").queue();
-                return;
+                return "NoLog";
             }
             Main.isUnderLockdown = true;
             for (GuildChannel channel : event.getGuild().getChannels()) {
@@ -35,8 +35,9 @@ public class Lockdown implements Command{
         } else if (args[0].equalsIgnoreCase("Lift")){
             if (!Main.isUnderLockdown){
                 event.getChannel().sendMessage("The server is already not on lockdown.").queue();
-                return;
+                return "NoLog";
             }
+            Main.isUnderLockdown = false;
             for (GuildChannel channel : event.getGuild().getChannels()) {
                 for (Role role : event.getGuild().getRoles()) {
                     if (!role.hasPermission(Permission.ADMINISTRATOR) && !role.hasPermission(Permission.MESSAGE_WRITE)) {
@@ -47,6 +48,7 @@ public class Lockdown implements Command{
         }
 
         event.getMessage().addReaction("\uD83D\uDC4C").queue();
+        return Main.isUnderLockdown ? "Server was locked down" : "Server lockdown was lifted";
     }
 
     @Override

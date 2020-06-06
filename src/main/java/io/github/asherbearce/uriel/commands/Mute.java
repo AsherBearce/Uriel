@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -14,9 +13,10 @@ import java.util.List;
 public class Mute implements Command {
 
     @Override
-    public void Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {
+    public String Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {
         List<Member> members = event.getMessage().getMentionedMembers();
         final Member mentioned = members.isEmpty() ? event.getGuild().getMemberById(args[0]) : members.get(0);
+        String returnValue = "NoLog";
 
         if (args.length == 2) {
 
@@ -29,15 +29,18 @@ public class Mute implements Command {
                 hours = Integer.valueOf(split[0]);
                 minutes = Integer.valueOf(split[1]);
             } catch (Exception e){
-                Main.sendErrormesage("The time given was not formatted correctly. It must be formatted as hh:mm.", event.getChannel());
-                return;
+                Main.sendErrorMessage("The time given was not formatted correctly. It must be formatted as hh:mm.", event.getChannel());
+                return "NoLog";
             }
 
             muteUser(mentioned, event.getGuild(), hours, minutes);
+            returnValue = mentioned.getEffectiveName() + " was been muted for " + args[1];
         }
         else {
             muteUser(mentioned, event.getGuild());
         }
+
+        return returnValue;
     }
 
     @Override

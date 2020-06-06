@@ -19,7 +19,6 @@ import javax.security.auth.login.LoginException;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
-import java.nio.channels.Channel;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
@@ -146,7 +145,7 @@ public class Main {
         }
     }
 
-    public static void sendErrormesage(String errorMessage, TextChannel channel){
+    public static void sendErrorMessage(String errorMessage, TextChannel channel){
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("An error has occurred!");
         embedBuilder.setDescription(errorMessage);
@@ -156,7 +155,7 @@ public class Main {
 
     public static class EventHandler extends ListenerAdapter{
         public void onGuildMessageReceived(GuildMessageReceivedEvent event){
-            //Parse commands here
+
             if (event.getAuthor().isBot()){
                 return;
             }
@@ -175,23 +174,27 @@ public class Main {
                 String[] args = allMatches.toArray(new String[]{});
 
                 if (command.startsWith(prefix)) {
-                    //TODO use the getCommandByName method here
-                    for (Command c : Commands) {
+                    Command c = getCommandByName(command.substring(1));
 
-                        if ((prefix + c.getCommandName()).equalsIgnoreCase(command)) {
-                            if (c.getMinArguments() <= args.length && c.getMaxArguments() >= args.length) {
-                                c.Execute(jda, event, args);
-                            }
-                            else {
-                                sendErrormesage("Invalid number of arguments: " + args.length +
-                                        ", this command takes at most " + c.getMaxArguments() + ", and at least " +
-                                        c.getMinArguments() + " arguments. See the help command for assistance.", event.getChannel());
-                            }
-                            break;
+                    if (c.getMinArguments() <= args.length && c.getMaxArguments() >= args.length) {
+                        String result = c.Execute(jda, event, args);
+
+                        if (settings.getLogChannelID() != null && !result.contentEquals("NoLog")){
+                            EmbedBuilder embedBuilder = new EmbedBuilder();
+                            embedBuilder.setTitle("Command Logged");
+                            embedBuilder.addField("Command used:", c.getCommandName(), false);
+                            embedBuilder.addField("Invoker:", event.getMember().getEffectiveName(), false);
+                            embedBuilder.addField("Date called:", (new Date()).toString(), false);
+                            embedBuilder.addField("Callback: ", result, false);
+
+                            event.getGuild().getTextChannelById(settings.getLogChannelID()).sendMessage(embedBuilder.build()).queue();
                         }
                     }
-                } else {
-                    //Send an error message
+                    else {
+                        sendErrorMessage("Invalid number of arguments: " + args.length +
+                                ", this command takes at most " + c.getMaxArguments() + ", and at least " +
+                                c.getMinArguments() + " arguments. See the help command for assistance.", event.getChannel());
+                    }
                 }
             }
             else {
@@ -209,7 +212,7 @@ public class Main {
                     if (user.spamWarnings > 1){
                         Mute.muteUser(event.getMember(), event.getGuild(), 0, 10);
                         user.spamWarnings = 0;
-                        Warn.giveUserWarn(event.getMember(), event.getGuild(), new Date(), jda.getSelfUser().getId(), "Spamming in ChannelId:" + event.getChannel().getId());
+                        Warn.giveUserWarn(event.getMember(), event.getGuild(), new Date(), jda.getSelfUser().getId(), "Spamming in " + event.getChannel().getName());
                         event.getChannel().sendMessage("A warning has been issued to <@" + authID + ">, and has been muted for 10 minutes for spamming.").queue();
                     }
                     else {

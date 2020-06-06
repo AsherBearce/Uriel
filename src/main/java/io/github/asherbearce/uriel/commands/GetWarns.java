@@ -15,9 +15,10 @@ import java.util.List;
 
 public class GetWarns implements Command {
     @Override
-    public void Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
+    public String Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
         List<Member> mentioned = event.getMessage().getMentionedMembers();
         String userID = mentioned.isEmpty() ? args[0] : mentioned.get(0).getId();
+        String returnValue = "NoLog";
 
         try {
             Database db = Database.getDatabase();
@@ -45,7 +46,6 @@ public class GetWarns implements Command {
 
             MessageEmbed embed = embedBuilder.build();
             event.getChannel().sendMessage(embed).queue();
-
         } catch (Exception e){
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle("There's been a problem trying to obtain the warnings for this user!");
@@ -53,6 +53,8 @@ public class GetWarns implements Command {
 
             event.getChannel().sendMessage(embedBuilder.build()).queue();
         }
+
+        return returnValue;
     }
 
     @Override

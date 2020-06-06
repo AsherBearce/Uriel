@@ -12,14 +12,20 @@ import java.util.Date;
 public class Warn implements Command {
     @Override
     //TODO Add error handling here
-    public void Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
+    public String Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
         Member userToWarn = !event.getMessage().getMentionedMembers().isEmpty() ?
                 event.getMessage().getMentionedMembers().get(0) : event.getGuild().getMemberById(args[0]);
+
+        String returnValue = "NoLog";
+
         if (userToWarn != null) {
             giveUserWarn(userToWarn, event.getGuild(), new Date(), event.getMember().getId(), args[1].toLowerCase());
+            returnValue = userToWarn.getEffectiveName() + " was warned. Reason: "+ args[1].toLowerCase();
         } else {
-            Main.sendErrormesage("This user does not exist.", event.getChannel());
+            Main.sendErrorMessage("This user does not exist.", event.getChannel());
         }
+
+        return returnValue;
     }
 
     @Override
@@ -55,7 +61,6 @@ public class Warn implements Command {
         embedBuilder.addField("Issuer: ", guild.getMemberById(issuerID).getEffectiveName(), false);
         embedBuilder.setColor(0xe3d57d);
         embedBuilder.setDescription("This warning has been recorded in our database. If you feel that this warning has been wrongfully given to you, please contact a moderator.");
-
 
         member.getUser().openPrivateChannel().complete().sendMessage(embedBuilder.build()).queue();
         try {

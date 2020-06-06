@@ -13,15 +13,19 @@ import java.util.List;
 public class Unmute implements Command {
 
     @Override
-    public void Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {
+    public String Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {
         List<Member> members = event.getMessage().getMentionedMembers();
         final Member mentioned = members.isEmpty() ? event.getGuild().getMemberById(args[0]) : members.get(0);
+        String returnValue = "NoLog";
 
         if (mentioned != null) {
             unmuteUser(mentioned, event.getGuild());
+            returnValue = mentioned.getEffectiveName() + " was unmuted";
         } else {
-            Main.sendErrormesage("This user does not exist.", event.getChannel());
+            Main.sendErrorMessage("This user does not exist.", event.getChannel());
         }
+
+        return returnValue;
     }
 
     @Override

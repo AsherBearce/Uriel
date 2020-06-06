@@ -6,7 +6,9 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Help implements Command {
     @Override
-    public void Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
+    public String Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
+        String returnValue = "NoLog";
+
         if (args.length == 0){
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle("Help menu");
@@ -39,6 +41,8 @@ public class Help implements Command {
             embedBuilder.addField(argsRequired, "", false);
             event.getChannel().sendMessage(embedBuilder.build()).queue();
         }
+
+        return returnValue;
     }
 
     @Override

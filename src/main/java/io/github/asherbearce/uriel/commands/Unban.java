@@ -4,14 +4,14 @@ import io.github.asherbearce.uriel.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Unban implements Command {
     @Override
-    public void Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
+    public String Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
         User user = null;
+        String returnValue = "NoLog";
 
         for (Guild.Ban ban : event.getGuild().retrieveBanList().complete()){
             if (ban.getUser().getId().equals(args[0])){
@@ -28,9 +28,12 @@ public class Unban implements Command {
             embedBuilder.setDescription(user.getName() + " has been unbanned!");
 
             event.getChannel().sendMessage(embedBuilder.build()).queue();
+            returnValue = user.getName() + " was unbanned";
         } else {
-            Main.sendErrormesage("This user is not in the ban list!", event.getChannel());
+            Main.sendErrorMessage("This user is not in the ban list!", event.getChannel());
         }
+
+        return returnValue;
     }
 
     @Override

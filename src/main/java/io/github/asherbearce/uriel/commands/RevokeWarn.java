@@ -9,9 +9,9 @@ import java.sql.ResultSet;
 
 public class RevokeWarn implements Command {
     @Override
-    public void Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
+    public String Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
 
-
+        String returnValue = "NoLog";
         int warnID = Integer.valueOf(args[0]);
 
         try{
@@ -27,6 +27,7 @@ public class RevokeWarn implements Command {
 
             db.removeUserWarning(warnID);
             event.getChannel().sendMessage(embedBuilder.build()).queue();
+            returnValue = "Warning was revoked for " + event.getGuild().getMemberById(warnedUser).getEffectiveName();
         } catch(Exception e){
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle("There's been a problem trying to obtain the warnings for this user!");
@@ -35,6 +36,8 @@ public class RevokeWarn implements Command {
             event.getChannel().sendMessage(embedBuilder.build()).queue();
 
         }
+
+        return returnValue;
     }
 
     @Override
