@@ -40,6 +40,7 @@ public class Settings implements Command{
             switch (args[0].toLowerCase()) {
                 case ("prefix"):
                     Main.settings.setCommandPrefix(args[1]);
+
                     returnValue += "Prefix ";
                     break;
                 case ("leavemessage"):
@@ -57,6 +58,9 @@ public class Settings implements Command{
                 case ("loggingchannelid"):
                     Main.settings.setLogChannelID(args[1]);
                     returnValue += "Logging Channel Id ";
+                    break;
+                case ("blacklist"):
+                    Main.settings.getBlacklistWords().add(args[1]);
                     break;
                 case ("sendwelcomemessage"): {
                     try {

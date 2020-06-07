@@ -65,7 +65,6 @@ public class Main {
             firstTimeSetup();
         }
         jda.getPresence().setActivity(Activity.watching("Type " + Main.settings.getCommandPrefix() + "Help for help!"));
-        //TODO Automatically change the message to the correct prefix
         //Eventually we want to populate the messageTracker from the database
         users = new HashMap<>();
 
@@ -93,6 +92,7 @@ public class Main {
         })).start();
 
         jda.addEventListener(new EventHandler());
+        settings.registerEventHandler(new PrefixChangedEventHandler());
 
         //Create our database
         try {
@@ -153,15 +153,39 @@ public class Main {
         channel.sendMessage(embedBuilder.build()).queue();
     }
 
+    public static class PrefixChangedEventHandler implements BotSettings.SettingsChangedEventHandler{
+        @Override
+        public void onCommandPrefixChanged(){
+            jda.getPresence().setActivity(Activity.watching("Type " + Main.settings.getCommandPrefix() + "Help for help!"));
+        }
+    }
+
     public static class EventHandler extends ListenerAdapter{
         public void onGuildMessageReceived(GuildMessageReceivedEvent event){
+            String raw = event.getMessage().getContentRaw();
+            String[] split = raw.split("[.,\\/#!$%\\^&\\*;:{}=\\-_`~()]\\S*");
+
+            for (int i = 0; i < split.length; i++){
+                for (String badword : settings.getBlacklistWords()) {
+                    if (split[i].equalsIgnoreCase(badword)){
+
+                        EmbedBuilder embedBuilder = new EmbedBuilder();
+                        embedBuilder.setTitle("Inappropriate words have been filtered");
+                        embedBuilder.setDescription("Don't worry, this isn't a warning!");
+                        embedBuilder.addField("Offensive item blocked: ", event.getMessage().getContentRaw(), false);
+                        event.getMember().getUser().openPrivateChannel().complete().sendMessage(embedBuilder.build()).queue();
+                        event.getChannel().deleteMessageById(event.getMessageId()).complete();
+                        break;
+                    }
+                }
+            }
 
             if (event.getAuthor().isBot()){
                 return;
             }
 
             String prefix = settings.getCommandPrefix();
-            String raw = event.getMessage().getContentRaw();
+
             if (raw.startsWith(prefix)) {
                 List<String> allMatches = new LinkedList<>();
                 Matcher m = Pattern.compile("\".*\"|\\S+").matcher(raw);
