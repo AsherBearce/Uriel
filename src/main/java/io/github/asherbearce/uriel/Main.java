@@ -44,6 +44,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception{
         File tokenFile = new File(FILE_NAME);
+        System.out.println("Loading");
 
         if (tokenFile.exists()){
             try{
@@ -70,6 +71,8 @@ public class Main {
 
         while (jda.getGuilds().isEmpty()){
             //Keep trying to retrieve the users
+            Thread.sleep(1000);
+            System.out.println("Waiting for guilds...");
         }
 
         for (Member user : jda.getGuilds().get(0).getMembers()){
@@ -162,6 +165,8 @@ public class Main {
 
     public static class EventHandler extends ListenerAdapter{
         public void onGuildMessageReceived(GuildMessageReceivedEvent event){
+
+
             String raw = event.getMessage().getContentRaw();
             String[] split = raw.split("[.,\\/#!$%\\^&\\*;:{}=\\-_`~()]\\S*");
 
@@ -181,6 +186,10 @@ public class Main {
             }
 
             if (event.getAuthor().isBot()){
+                return;
+            }
+
+            if (!event.getMember().hasPermission(Permission.ADMINISTRATOR)){
                 return;
             }
 
@@ -224,6 +233,7 @@ public class Main {
             else {
                 long authID = event.getAuthor().getIdLong();
                 UserModel user = users.get(authID);
+
                 user.currentMessageFrequency += 1;
                 users.replace(authID, user);
 
