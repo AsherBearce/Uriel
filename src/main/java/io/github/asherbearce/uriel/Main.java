@@ -4,6 +4,7 @@ import io.github.asherbearce.uriel.commands.Command;
 import io.github.asherbearce.uriel.commands.Mute;
 import io.github.asherbearce.uriel.commands.Warn;
 import io.github.asherbearce.uriel.database.Database;
+import io.github.asherbearce.uriel.models.SpamTracker;
 import io.github.asherbearce.uriel.models.UserModel;
 import io.github.asherbearce.uriel.settings.BotSettings;
 import net.dv8tion.jda.api.*;
@@ -34,7 +35,7 @@ public class Main {
     private static TextChannel leaveJoinNotificationChannel;
     private static JDA jda;
     private static final int MESSAGE_FREQUENCY_LIMIT = 4;
-    private static Map<Long, UserModel> users;
+    private static Map<Long, SpamTracker> users;
     public static boolean isUnderLockdown = false;
     public static Database db;
 
@@ -76,23 +77,9 @@ public class Main {
         }
 
         for (Member user : jda.getGuilds().get(0).getMembers()){
-            UserModel model = new UserModel();
-            model.userID = user.getIdLong();
-            model.spamWarnings = 0;
-            users.put(user.getIdLong(), model);
+            SpamTracker tracker = new SpamTracker(user);
+            users.put(user.getIdLong(), tracker);
         }
-
-        (new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(5000);
-                    users.replaceAll((k, v)-> {v.currentMessageFrequency = 0; return v;});
-                }
-                catch (InterruptedException e){
-                    e.printStackTrace();
-                }
-            }
-        })).start();
 
         jda.addEventListener(new EventHandler());
         settings.registerEventHandler(new PrefixChangedEventHandler());
@@ -189,6 +176,7 @@ public class Main {
                 return;
             }
 
+
             if (!event.getMember().hasPermission(Permission.ADMINISTRATOR)){
                 return;
             }
@@ -231,26 +219,31 @@ public class Main {
                 }
             }
             else {
-                long authID = event.getAuthor().getIdLong();
-                UserModel user = users.get(authID);
 
-                user.currentMessageFrequency += 1;
-                users.replace(authID, user);
+                //TODO edit this so it will delete certain users who are not typing, and re-adds them
+                long authorID = event.getAuthor().getIdLong();
+                SpamTracker tracker;
+                if (users.containsKey(authorID)) {
+                    tracker = users.get(authorID);
+                } else {
+                    tracker = users.put(authorID, new SpamTracker(event.getMember()));
+                }
 
-                if (user.currentMessageFrequency >= MESSAGE_FREQUENCY_LIMIT){
-                    user.spamWarnings += 1;
-                    user.currentMessageFrequency = 0;
+                tracker.updateMessages(event.getMessage());
 
-                    users.replace(authID, user);
+                if (tracker.isSpamming()){
+                    if (!tracker.warned) {
+                        tracker.warned = true;
 
-                    if (user.spamWarnings > 1){
+                        //TODO change this to an embed
+                        event.getChannel().sendMessage("Hey, <@" + authorID + ">, stop the spamming. Next warning and you'll be muted, and a warning will be issued!").queue();
+                    } else {
                         Mute.muteUser(event.getMember(), event.getGuild(), 0, 10);
-                        user.spamWarnings = 0;
                         Warn.giveUserWarn(event.getMember(), event.getGuild(), new Date(), jda.getSelfUser().getId(), "Spamming in " + event.getChannel().getName());
-                        event.getChannel().sendMessage("A warning has been issued to <@" + authID + ">, and has been muted for 10 minutes for spamming.").queue();
-                    }
-                    else {
-                        event.getChannel().sendMessage("Hey! <@" + authID + "> Stop spamming! This is a warning. Next time you will be muted!").queue();
+
+                        
+                        event.getChannel().sendMessage("<@" + authorID + "> has been muted for 10 minutes for spamming.").queue();
+                        tracker.warned = false;
                     }
                 }
             }

@@ -17,7 +17,7 @@ public class SpamTracker {
     public boolean isSpamming(){
         boolean result = false;
 
-        if (lastMessages.get(2).getMentions().size() > MENTION_LIMIT){
+        if (getMostRecentMessage().getMentionedMembers().size() >= MENTION_LIMIT){
             result = true;
         } else if (
                 lastMessages.size() == 3 &&
@@ -25,7 +25,7 @@ public class SpamTracker {
                 lastMessages.get(0).getContentRaw().contentEquals(lastMessages.get(2).getContentRaw())){
             result = true;
         } else if (lastMessages.size() == 3 &&
-                lastMessages.get(0).getTimeCreated().plusSeconds(5).isBefore(lastMessages.get(2).getTimeCreated())){
+                lastMessages.get(0).getTimeCreated().plusSeconds(5).isAfter(lastMessages.get(2).getTimeCreated())){
             result = true;
         }
 
