@@ -5,7 +5,6 @@ import io.github.asherbearce.uriel.commands.Mute;
 import io.github.asherbearce.uriel.commands.Warn;
 import io.github.asherbearce.uriel.database.Database;
 import io.github.asherbearce.uriel.models.SpamTracker;
-import io.github.asherbearce.uriel.models.UserModel;
 import io.github.asherbearce.uriel.settings.BotSettings;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.Activity;
@@ -74,11 +73,6 @@ public class Main {
             //Keep trying to retrieve the users
             Thread.sleep(1000);
             System.out.println("Waiting for guilds...");
-        }
-
-        for (Member user : jda.getGuilds().get(0).getMembers()){
-            SpamTracker tracker = new SpamTracker(user);
-            users.put(user.getIdLong(), tracker);
         }
 
         jda.addEventListener(new EventHandler());
@@ -176,14 +170,12 @@ public class Main {
                 return;
             }
 
-
-            if (!event.getMember().hasPermission(Permission.ADMINISTRATOR)){
-                return;
-            }
-
             String prefix = settings.getCommandPrefix();
 
             if (raw.startsWith(prefix)) {
+                if (!event.getMember().hasPermission(Permission.ADMINISTRATOR)){
+                    return;
+                }
                 List<String> allMatches = new LinkedList<>();
                 Matcher m = Pattern.compile("\".*\"|\\S+").matcher(raw);
 
@@ -219,21 +211,25 @@ public class Main {
                 }
             }
             else {
-
+                //TODO Fix this to apply anti-spam on ALL messages
                 //TODO edit this so it will delete certain users who are not typing, and re-adds them
                 long authorID = event.getAuthor().getIdLong();
                 SpamTracker tracker;
+
                 if (users.containsKey(authorID)) {
                     tracker = users.get(authorID);
                 } else {
-                    tracker = users.put(authorID, new SpamTracker(event.getMember()));
+                    tracker = new SpamTracker(event.getMember());
+                    users.put(authorID, tracker);
                 }
 
                 tracker.updateMessages(event.getMessage());
 
-                if (tracker.isSpamming()){
+                if (tracker.isSpamming()) {
                     if (!tracker.warned) {
                         tracker.warned = true;
+
+
 
                         //TODO change this to an embed
                         event.getChannel().sendMessage("Hey, <@" + authorID + ">, stop the spamming. Next warning and you'll be muted, and a warning will be issued!").queue();
@@ -241,7 +237,7 @@ public class Main {
                         Mute.muteUser(event.getMember(), event.getGuild(), 0, 10);
                         Warn.giveUserWarn(event.getMember(), event.getGuild(), new Date(), jda.getSelfUser().getId(), "Spamming in " + event.getChannel().getName());
 
-                        
+
                         event.getChannel().sendMessage("<@" + authorID + "> has been muted for 10 minutes for spamming.").queue();
                         tracker.warned = false;
                     }

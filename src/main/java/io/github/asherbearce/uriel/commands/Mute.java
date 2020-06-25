@@ -34,7 +34,7 @@ public class Mute implements Command {
             }
 
             muteUser(mentioned, event.getGuild(), hours, minutes);
-            returnValue = mentioned.getEffectiveName() + " was been muted for " + args[1];
+            returnValue = mentioned.getEffectiveName() + " was been muted for: " + args[1];
         }
         else {
             muteUser(mentioned, event.getGuild());
