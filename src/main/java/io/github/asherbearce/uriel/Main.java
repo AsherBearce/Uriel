@@ -86,6 +86,21 @@ public class Main {
         }catch (ClassNotFoundException e){
 
         }
+
+        new Thread(() -> {
+            while (true){
+                try {
+                    Thread.sleep(60000);
+                    users.entrySet().removeIf(
+                            entry -> {System.out.println("User went idle"); return entry.getValue().isIdle(); }
+                    );
+
+
+                } catch (InterruptedException e) {
+                    //Do nothing
+                }
+            }
+        }).start();
     }
 
     private static void firstTimeSetup(){
@@ -173,9 +188,7 @@ public class Main {
             String prefix = settings.getCommandPrefix();
 
             if (raw.startsWith(prefix)) {
-                if (!event.getMember().hasPermission(Permission.ADMINISTRATOR)){
-                    return;
-                }
+
                 List<String> allMatches = new LinkedList<>();
                 Matcher m = Pattern.compile("\".*\"|\\S+").matcher(raw);
 
@@ -188,6 +201,10 @@ public class Main {
 
                 if (command.startsWith(prefix)) {
                     Command c = getCommandByName(command.substring(1));
+
+                    if (c.getPermissions() == Command.PERMISSION_TYPES.ADMIN && !event.getMember().hasPermission(Permission.ADMINISTRATOR)){
+                        return;
+                    }
 
                     if (c.getMinArguments() <= args.length && c.getMaxArguments() >= args.length) {
                         String result = c.Execute(jda, event, args);
@@ -211,7 +228,6 @@ public class Main {
                 }
             }
             else {
-                //TODO Fix this to apply anti-spam on ALL messages
                 //TODO edit this so it will delete certain users who are not typing, and re-adds them
                 long authorID = event.getAuthor().getIdLong();
                 SpamTracker tracker;
@@ -221,6 +237,7 @@ public class Main {
                 } else {
                     tracker = new SpamTracker(event.getMember());
                     users.put(authorID, tracker);
+                    System.out.println("User has chatted, adding to spam tracking");
                 }
 
                 tracker.updateMessages(event.getMessage());

@@ -70,5 +70,8 @@ public class Help implements Command {
         return 0;
     }
 
-
+    @Override
+    public Command.PERMISSION_TYPES getPermissions(){
+        return PERMISSION_TYPES.NONE;
+    }
 }

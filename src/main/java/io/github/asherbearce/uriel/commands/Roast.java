@@ -34,4 +34,9 @@ public class Roast implements Command {
         event.getChannel().sendMessage("Sam is a fucking bitch ass!").queue();
         return "Roasted Sam";
     }
+
+    @Override
+    public Command.PERMISSION_TYPES getPermissions(){
+        return PERMISSION_TYPES.NONE;
+    }
 }

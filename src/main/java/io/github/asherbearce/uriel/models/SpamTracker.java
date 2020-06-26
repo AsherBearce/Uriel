@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 
+import java.time.OffsetDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,6 +43,11 @@ public class SpamTracker {
 
     public Message getMostRecentMessage(){
         return lastMessages.get(lastMessages.size() - 1);
+    }
+
+    public boolean isIdle(){
+        OffsetDateTime timeNow = OffsetDateTime.now();
+        return getMostRecentMessage().getTimeCreated().plusMinutes(5).isBefore(timeNow);
     }
 
     public SpamTracker(Member member){
