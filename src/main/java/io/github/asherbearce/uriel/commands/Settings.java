@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
+//TODO this needs a revamp
 public class Settings implements Command{
     @Override
     public String getCommandName() {
@@ -76,6 +77,9 @@ public class Settings implements Command{
                     Main.settings.setMutedRoleID(args[1]);
                     returnValue += "Mute Role Id ";
                     break;
+                case ("addspamchannel"):
+                    Main.settings.addSpamChannel(args[1]);
+                    break;
                 default:
                     event.getChannel().sendMessage(args[0] + " is not a setting!").queue();
                     returnValue = "NoLog";
@@ -99,6 +103,7 @@ public class Settings implements Command{
             embedBuilder.addField("", "-SendWelcomeMessage: a value that determines if a greeting message is sent. Default: false", false);
             embedBuilder.addField("", "-MuteRole: the role id of the role to be given to muted users. Default: none", false);
             embedBuilder.addField("", "-LoggingChannelID: the channel id in which logging is to take place. Default: none", false);
+            embedBuilder.addField("", "-AddSpamChannel: the channel ids in which spam tracking is not applied. Default: none", false);
 
             event.getChannel().sendMessage(embedBuilder.build()).queue();
         }

@@ -87,6 +87,12 @@ public class BotSettings {
         this.blacklistWords = blacklistWords;
     }
 
+    public void setSpamChannelIds(List<String> spamChannels) { this.spamChannelIds = spamChannels; }
+
+    public List<String> getSpamChannelIds() { return spamChannelIds; }
+
+    public void addSpamChannel(String id) { this.spamChannelIds.add(id); }
+
     private String botToken;
     private String commandPrefix;
     private String leaveMessage;
@@ -97,6 +103,7 @@ public class BotSettings {
     private String logChannelID;
     private List<SettingsChangedEventHandler> events = new LinkedList<>();
     private List<String> blacklistWords = new LinkedList<>();
+    private List<String> spamChannelIds = new LinkedList<>();
 
     private void notifyEvent(CHANGE_TYPE type){
         for (SettingsChangedEventHandler handler : events){
@@ -130,11 +137,13 @@ public class BotSettings {
         botToken = token;
         commandPrefix = "!";
         initializeBlacklist();
+        spamChannelIds = new LinkedList<>();
     }
 
     public BotSettings(){
         commandPrefix = "!";
         initializeBlacklist();
+        spamChannelIds = new LinkedList<>();
     }
 
     public void registerEventHandler(SettingsChangedEventHandler handler){

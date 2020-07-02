@@ -92,7 +92,7 @@ public class Main {
                 try {
                     Thread.sleep(60000);
                     users.entrySet().removeIf(
-                            entry -> {System.out.println("User went idle"); return entry.getValue().isIdle(); }
+                            entry -> entry.getValue().isIdle()
                     );
 
 
@@ -152,6 +152,7 @@ public class Main {
         channel.sendMessage(embedBuilder.build()).queue();
     }
 
+    //TODO get rid of this
     public static class PrefixChangedEventHandler implements BotSettings.SettingsChangedEventHandler{
         @Override
         public void onCommandPrefixChanged(){
@@ -161,12 +162,11 @@ public class Main {
 
     public static class EventHandler extends ListenerAdapter{
         public void onGuildMessageReceived(GuildMessageReceivedEvent event){
-
-
             String raw = event.getMessage().getContentRaw();
-            String[] split = raw.split("[.,\\/#!$%\\^&\\*;:{}=\\-_`~()]\\S*");
+            String[] split = raw.split("[^\\w']+");
 
             for (int i = 0; i < split.length; i++){
+                System.out.println(split[i]);
                 for (String badword : settings.getBlacklistWords()) {
                     if (split[i].equalsIgnoreCase(badword)){
 
@@ -228,7 +228,12 @@ public class Main {
                 }
             }
             else {
-                //TODO edit this so it will delete certain users who are not typing, and re-adds them
+                for (String id : settings.getSpamChannelIds()){
+                    if (event.getChannel().getId().contentEquals(id)){
+                        return;
+                    }
+                }
+
                 long authorID = event.getAuthor().getIdLong();
                 SpamTracker tracker;
 
@@ -237,7 +242,6 @@ public class Main {
                 } else {
                     tracker = new SpamTracker(event.getMember());
                     users.put(authorID, tracker);
-                    System.out.println("User has chatted, adding to spam tracking");
                 }
 
                 tracker.updateMessages(event.getMessage());
