@@ -2,11 +2,15 @@ package io.github.asherbearce.uriel.commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Help implements Command {
     @Override
-    public String Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
+    public String Execute(JDA jda, Guild guild, TextChannel channel, Member author, String[] args) {
         String returnValue = "NoLog";
 
         if (args.length == 0){
@@ -20,7 +24,7 @@ public class Help implements Command {
             embedBuilder.addField("", "-Use the argument \"commands\" to get a list of commands.", false);
             embedBuilder.addField("", "-Use the name of the command after !Help to get more specifics on the command.", false);
 
-            event.getChannel().sendMessage(embedBuilder.build()).queue();
+            channel.sendMessage(embedBuilder.build()).queue();
         } else if (args[0].equalsIgnoreCase("Commands")){
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle("Command list:");
@@ -29,8 +33,8 @@ public class Help implements Command {
                 embedBuilder.addField(c.getCommandName(), c.getDescription(), false);
             }
 
-            event.getChannel().sendMessage("A list of commands has been sent to you!").queue();
-            event.getMember().getUser().openPrivateChannel().complete().sendMessage(embedBuilder.build()).queue();
+            channel.sendMessage("A list of commands has been sent to you!").queue();
+            author.getUser().openPrivateChannel().complete().sendMessage(embedBuilder.build()).queue();
         } else {
             String argName = args[0];
             Command command = CommandList.getCommandByName(argName);
@@ -39,7 +43,7 @@ public class Help implements Command {
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle("Argument description of " + command.getCommandName());
             embedBuilder.addField(argsRequired, "", false);
-            event.getChannel().sendMessage(embedBuilder.build()).queue();
+            channel.sendMessage(embedBuilder.build()).queue();
         }
 
         return returnValue;

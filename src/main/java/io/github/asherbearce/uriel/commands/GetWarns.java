@@ -3,8 +3,7 @@ package io.github.asherbearce.uriel.commands;
 import io.github.asherbearce.uriel.database.Database;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.sql.ResultSet;
@@ -15,8 +14,9 @@ import java.util.List;
 
 public class GetWarns implements Command {
     @Override
-    public String Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
-        List<Member> mentioned = event.getMessage().getMentionedMembers();
+    public String Execute(JDA jda, Guild guild, TextChannel channel, Member author, String[] args) {
+        List<Member> mentioned = message.getMentionedMembers();//This is going to have to change in some way
+        //We'll need the parser to take care of this
         String userID = mentioned.isEmpty() ? args[0] : mentioned.get(0).getId();
         String returnValue = "NoLog";
 
@@ -33,7 +33,7 @@ public class GetWarns implements Command {
                 int warningID = results.getInt(1);
                 String dateIssued = (LocalDateTime.ofInstant(
                         Instant.ofEpochMilli(results.getDate(2).getTime()), ZoneId.systemDefault())).toString();
-                String issuerName = event.getGuild().getMemberById(results.getString(3)).getEffectiveName();
+                String issuerName = guild.getMemberById(results.getString(3)).getEffectiveName();
                 String reason = results.getString(4);
 
                 String fieldMessage = "Warning ID: " + warningID + " Date Issued: " + dateIssued + " Issued by: " + issuerName + " Reason: " + reason;
@@ -45,13 +45,13 @@ public class GetWarns implements Command {
             }
 
             MessageEmbed embed = embedBuilder.build();
-            event.getChannel().sendMessage(embed).queue();
+            channel.sendMessage(embed).queue();
         } catch (Exception e){
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle("There's been a problem trying to obtain the warnings for this user!");
             embedBuilder.addField("Please try again, or contact the developer (Abstract_Math)", "", false);
 
-            event.getChannel().sendMessage(embedBuilder.build()).queue();
+           channel.sendMessage(embedBuilder.build()).queue();
         }
 
         return returnValue;

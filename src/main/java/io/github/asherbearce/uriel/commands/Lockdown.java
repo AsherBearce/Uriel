@@ -3,8 +3,7 @@ package io.github.asherbearce.uriel.commands;
 import io.github.asherbearce.uriel.Main;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.LinkedList;
@@ -13,7 +12,7 @@ import java.util.List;
 
 public class Lockdown implements Command{
     @Override
-    public String Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
+    public String Execute(JDA jda, Guild guild, TextChannel channel, Member author, String[] args) {
         List<Permission> perms = new LinkedList<>();
         perms.add(Permission.MESSAGE_WRITE);
         perms.add(Permission.MESSAGE_ADD_REACTION);
@@ -21,14 +20,14 @@ public class Lockdown implements Command{
 
         if (args.length == 0) {
             if (Main.isUnderLockdown){
-                event.getChannel().sendMessage("The server is already on lockdown.").queue();
+                channel.sendMessage("The server is already on lockdown.").queue();
                 return "NoLog";
             }
             Main.isUnderLockdown = true;
-            for (GuildChannel channel : event.getGuild().getChannels()) {
-                for (Role role : event.getGuild().getRoles()) {
+            for (GuildChannel Channel : guild.getChannels()) {
+                for (Role role : guild.getRoles()) {
                     if (!role.hasPermission(Permission.ADMINISTRATOR) && role.hasPermission(Permission.MESSAGE_WRITE)) {
-                        channel.getManager().putPermissionOverride(role, null, perms).complete();
+                        Channel.getManager().putPermissionOverride(role, null, perms).complete();
                     }
                 }
             }

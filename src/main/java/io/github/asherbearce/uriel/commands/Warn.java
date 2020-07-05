@@ -20,7 +20,7 @@ public class Warn implements Command {
 
         if (userToWarn != null) {
             giveUserWarn(userToWarn, event.getGuild(), new Date(), event.getMember().getId(), args[1].toLowerCase());
-            returnValue = userToWarn.getEffectiveName() + " was warned. Reason: "+ args[1].toLowerCase();
+            returnValue = userToWarn.getEffectiveName() + " was warned. Reason: " + args[1].toLowerCase();
         } else {
             Main.sendErrorMessage("This user does not exist.", event.getChannel());
         }

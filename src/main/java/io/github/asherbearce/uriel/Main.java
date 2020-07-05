@@ -207,7 +207,7 @@ public class Main {
                     }
 
                     if (c.getMinArguments() <= args.length && c.getMaxArguments() >= args.length) {
-                        String result = c.Execute(jda, event, args);
+                        String result = c.Execute(jda, event.getGuild(), event.getChannel(), event.getMember(), args);
 
                         if (settings.getLogChannelID() != null && !result.contentEquals("NoLog")){
                             EmbedBuilder embedBuilder = new EmbedBuilder();
