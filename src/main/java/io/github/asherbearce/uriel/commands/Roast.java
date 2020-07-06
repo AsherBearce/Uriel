@@ -1,6 +1,9 @@
 package io.github.asherbearce.uriel.commands;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Roast implements Command {
@@ -30,8 +33,8 @@ public class Roast implements Command {
     }
 
     @Override
-    public String Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {
-        event.getChannel().sendMessage("Sam is a fucking bitch ass!").queue();
+    public String Execute(JDA jda, Guild guild, TextChannel channel, Member author, String[] args) {
+        channel.sendMessage("Sam is a fucking bitch ass!").queue();
         return "Roasted Sam";
     }
 

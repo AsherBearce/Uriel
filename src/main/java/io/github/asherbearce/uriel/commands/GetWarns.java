@@ -11,18 +11,21 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GetWarns implements Command {
     @Override
     public String Execute(JDA jda, Guild guild, TextChannel channel, Member author, String[] args) {
-        List<Member> mentioned = message.getMentionedMembers();//This is going to have to change in some way
-        //We'll need the parser to take care of this
-        String userID = mentioned.isEmpty() ? args[0] : mentioned.get(0).getId();
+        Matcher m = Pattern.compile("[0-9]+").matcher(args[0]);
+        m.find();
+        Member member = guild.getMemberById(m.group());
+
         String returnValue = "NoLog";
 
         try {
             Database db = Database.getDatabase();
-            ResultSet results = db.getAllUserWarnings(userID);
+            ResultSet results = db.getAllUserWarnings(member.getId());
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle("Results:");
 

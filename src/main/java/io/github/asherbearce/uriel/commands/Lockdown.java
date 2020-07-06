@@ -1,6 +1,7 @@
 package io.github.asherbearce.uriel.commands;
 
 import io.github.asherbearce.uriel.Main;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -33,12 +34,12 @@ public class Lockdown implements Command{
             }
         } else if (args[0].equalsIgnoreCase("Lift")){
             if (!Main.isUnderLockdown){
-                event.getChannel().sendMessage("The server is already not on lockdown.").queue();
+                channel.sendMessage("The server is already not on lockdown.").queue();
                 return "NoLog";
             }
             Main.isUnderLockdown = false;
-            for (GuildChannel channel : event.getGuild().getChannels()) {
-                for (Role role : event.getGuild().getRoles()) {
+            for (GuildChannel guildChannel : guild.getChannels()) {
+                for (Role role : guild.getRoles()) {
                     if (!role.hasPermission(Permission.ADMINISTRATOR) && !role.hasPermission(Permission.MESSAGE_WRITE)) {
                         channel.getManager().putPermissionOverride(role, perms, null).complete();
                     }
@@ -46,7 +47,11 @@ public class Lockdown implements Command{
             }
         }
 
-        event.getMessage().addReaction("\uD83D\uDC4C").queue();
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setTitle("Server locked down!");
+        builder.setDescription("No one is able to type");
+
+        channel.sendMessage(builder.build()).queue();
         return Main.isUnderLockdown ? "Server was locked down" : "Server lockdown was lifted";
     }
 

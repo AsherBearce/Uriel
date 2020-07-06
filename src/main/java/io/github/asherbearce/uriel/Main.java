@@ -1,6 +1,7 @@
 package io.github.asherbearce.uriel;
 
 import io.github.asherbearce.uriel.commands.Command;
+import io.github.asherbearce.uriel.commands.CommandList;
 import io.github.asherbearce.uriel.commands.Mute;
 import io.github.asherbearce.uriel.commands.Warn;
 import io.github.asherbearce.uriel.database.Database;
@@ -166,7 +167,6 @@ public class Main {
             String[] split = raw.split("[^\\w']+");
 
             for (int i = 0; i < split.length; i++){
-                System.out.println(split[i]);
                 for (String badword : settings.getBlacklistWords()) {
                     if (split[i].equalsIgnoreCase(badword)){
 
@@ -255,8 +255,14 @@ public class Main {
                         //TODO change this to an embed
                         event.getChannel().sendMessage("Hey, <@" + authorID + ">, stop the spamming. Next warning and you'll be muted, and a warning will be issued!").queue();
                     } else {
-                        Mute.muteUser(event.getMember(), event.getGuild(), 0, 10);
-                        Warn.giveUserWarn(event.getMember(), event.getGuild(), new Date(), jda.getSelfUser().getId(), "Spamming in " + event.getChannel().getName());
+                        CommandList.getCommandByName("Mute").Execute(jda,
+                                event.getGuild(), event.getChannel(),
+                                event.getGuild().getMemberById(jda.getSelfUser().getId()), new String[]{event.getMember().getId(), "10m"});
+
+                        CommandList.getCommandByName("Warn").Execute(jda,
+                                event.getGuild(), event.getChannel(),
+                                event.getGuild().getMemberById(jda.getSelfUser().getId()),
+                                new String[]{event.getMember().getId(), "Spamming in " + event.getChannel().getName()});
 
 
                         event.getChannel().sendMessage("<@" + authorID + "> has been muted for 10 minutes for spamming.").queue();

@@ -6,23 +6,33 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Warn implements Command {
     @Override
     //TODO Add error handling here
-    public String Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
-        Member userToWarn = !event.getMessage().getMentionedMembers().isEmpty() ?
-                event.getMessage().getMentionedMembers().get(0) : event.getGuild().getMemberById(args[0]);
+    public String Execute(JDA jda, Guild guild, TextChannel channel, Member author, String[] args) {
+        Matcher m = Pattern.compile("[0-9]+").matcher(args[0]);
+        m.find();
+        Member userToWarn = guild.getMemberById(m.group());
+
+        String reason = "";
+
+        for (int i = 1; i < args.length; i++){
+            reason += (args[i] + " ");
+        }
 
         String returnValue = "NoLog";
 
         if (userToWarn != null) {
-            giveUserWarn(userToWarn, event.getGuild(), new Date(), event.getMember().getId(), args[1].toLowerCase());
-            returnValue = userToWarn.getEffectiveName() + " was warned. Reason: " + args[1].toLowerCase();
+            giveUserWarn(userToWarn, guild, new Date(), author.getId(), reason.toLowerCase());
+            returnValue = userToWarn.getEffectiveName() + " was warned. Reason: " + reason.toLowerCase();
         } else {
-            Main.sendErrorMessage("This user does not exist.", event.getChannel());
+            Main.sendErrorMessage("This user does not exist.", channel);
         }
 
         return returnValue;
@@ -45,7 +55,7 @@ public class Warn implements Command {
 
     @Override
     public int getMaxArguments() {
-        return 2;
+        return 100;
     }
 
     @Override

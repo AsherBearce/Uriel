@@ -17,9 +17,14 @@ public class Ban implements Command {
     @Override
     public String Execute(JDA jda, Guild guild, TextChannel channel, Member author, String[] args) {
         //Do some argument processing.
-        Matcher m = Pattern.compile("[0-9]*").matcher(args[0]);
+        Matcher m = Pattern.compile("[0-9]+").matcher(args[0]);
+        m.find();
         Member member = guild.getMemberById(m.group());
         String reason = "";
+
+        for (int i = 1; i < args.length; i++){
+            reason += (args[i] + " ");
+        }
 
         String returnValue = "Command Error";
 
@@ -59,7 +64,7 @@ public class Ban implements Command {
 
     @Override
     public int getMaxArguments() {
-        return 2;
+        return 100;
     }
 
     @Override

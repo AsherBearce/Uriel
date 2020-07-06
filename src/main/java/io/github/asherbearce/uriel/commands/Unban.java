@@ -4,16 +4,18 @@ import io.github.asherbearce.uriel.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Unban implements Command {
     @Override
-    public String Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
+    public String Execute(JDA jda, Guild guild, TextChannel channel, Member author, String[] args) {
         User user = null;
         String returnValue = "NoLog";
 
-        for (Guild.Ban ban : event.getGuild().retrieveBanList().complete()){
+        for (Guild.Ban ban : guild.retrieveBanList().complete()){
             if (ban.getUser().getId().equals(args[0])){
                 user = ban.getUser();
                 break;
@@ -21,16 +23,16 @@ public class Unban implements Command {
         }
 
         if (user != null){
-            event.getGuild().unban(user).complete();
+            guild.unban(user).complete();
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setColor(0x8be041);
             embedBuilder.setTitle("User has been unbanned!");
             embedBuilder.setDescription(user.getName() + " has been unbanned!");
 
-            event.getChannel().sendMessage(embedBuilder.build()).queue();
+            channel.sendMessage(embedBuilder.build()).queue();
             returnValue = user.getName() + " was unbanned";
         } else {
-            Main.sendErrorMessage("This user is not in the ban list!", event.getChannel());
+            Main.sendErrorMessage("This user is not in the ban list!", channel);
         }
 
         return returnValue;

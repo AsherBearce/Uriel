@@ -5,39 +5,54 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Mute implements Command {
 
     @Override
-    public String Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {
-        List<Member> members = event.getMessage().getMentionedMembers();
-        final Member mentioned = members.isEmpty() ? event.getGuild().getMemberById(args[0]) : members.get(0);
+    public String Execute(JDA jda, Guild guild, TextChannel channel, Member author, String[] args) {
+        Matcher m = Pattern.compile("[0-9]+").matcher(args[0]);
+        m.find();
+        Member member = guild.getMemberById(m.group());
         String returnValue = "NoLog";
 
-        if (args.length == 2) {
 
-            String time = args[1];
-            String[] split = time.split(":");
-            int hours;
-            int minutes;
 
-            try {
-                hours = Integer.valueOf(split[0]);
-                minutes = Integer.valueOf(split[1]);
-            } catch (Exception e){
-                Main.sendErrorMessage("The time given was not formatted correctly. It must be formatted as hh:mm.", event.getChannel());
-                return "NoLog";
+        if (args.length >= 2) {
+            int hours = 0;
+            int minutes = 0;
+            Matcher argMatcher = Pattern.compile("[0-9]+").matcher(args[1].toLowerCase());
+            argMatcher.find();
+
+
+            if (args[1].toLowerCase().indexOf(args[1].length()) == 'h'){
+                hours = Integer.parseInt(argMatcher.group());
+            } else {
+                minutes = Integer.parseInt(argMatcher.group());
             }
 
-            muteUser(mentioned, event.getGuild(), hours, minutes);
-            returnValue = mentioned.getEffectiveName() + " was been muted for: " + args[1];
+            if (args.length == 3){
+                argMatcher = Pattern.compile("[0-9]+").matcher(args[2].toLowerCase());
+
+                if (args[2].toLowerCase().indexOf(args[2].length()) == 'm'){
+                    hours = Integer.parseInt(argMatcher.group());
+                } else {
+                    minutes = Integer.parseInt(argMatcher.group());
+                }
+            }
+
+
+            muteUser(member, guild, hours, minutes);
+            returnValue = member.getEffectiveName() + " was been muted for: " + args[1];
         }
         else {
-            muteUser(mentioned, event.getGuild());
+            muteUser(member, guild);
         }
 
         return returnValue;
@@ -60,7 +75,7 @@ public class Mute implements Command {
 
     @Override
     public int getMaxArguments() {
-        return 2;
+        return 3;
     }
 
     @Override

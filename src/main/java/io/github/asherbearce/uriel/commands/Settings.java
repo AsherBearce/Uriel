@@ -3,6 +3,9 @@ package io.github.asherbearce.uriel.commands;
 import io.github.asherbearce.uriel.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 //TODO this needs a revamp
@@ -33,7 +36,7 @@ public class Settings implements Command{
     }
 
     @Override
-    public String Execute(final JDA jda, , final String[] args) {
+    public String Execute(JDA jda, Guild guild, TextChannel channel, Member author, String[] args) {
 
         String returnValue = "NoLog";
 

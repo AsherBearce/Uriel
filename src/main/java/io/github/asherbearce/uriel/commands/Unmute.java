@@ -5,24 +5,28 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Unmute implements Command {
 
     @Override
-    public String Execute(final JDA jda, final GuildMessageReceivedEvent event, final String[] args) {
-        List<Member> members = event.getMessage().getMentionedMembers();
-        final Member mentioned = members.isEmpty() ? event.getGuild().getMemberById(args[0]) : members.get(0);
+    public String Execute(JDA jda, Guild guild, TextChannel channel, Member author, String[] args) {
+        Matcher m = Pattern.compile("[0-9]+").matcher(args[0]);
+        m.find();
+        Member member = guild.getMemberById(m.group());
         String returnValue = "NoLog";
 
-        if (mentioned != null) {
-            unmuteUser(mentioned, event.getGuild());
-            returnValue = mentioned.getEffectiveName() + " was unmuted";
+        if (member != null) {
+            unmuteUser(member, guild);
+            returnValue = member.getEffectiveName() + " was unmuted";
         } else {
-            Main.sendErrorMessage("This user does not exist.", event.getChannel());
+            Main.sendErrorMessage("This user does not exist.", channel);
         }
 
         return returnValue;

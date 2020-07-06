@@ -3,30 +3,33 @@ package io.github.asherbearce.uriel.commands;
 import io.github.asherbearce.uriel.Main;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageHistory;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class Purge implements Command {
     @Override
-    public String Execute(JDA jda, GuildMessageReceivedEvent event, String[] args) {
+    public String Execute(JDA jda, Guild guild, TextChannel channel, Member author, String[] args) {
         int purgeAmount;
         try {
             purgeAmount = Integer.valueOf(args[0]);
         } catch (Exception e){
-            Main.sendErrorMessage("The given argument wasn't a number.", event.getChannel());
+            Main.sendErrorMessage("The given argument wasn't a number.", channel);
             return "NoLog";
         }
-        MessageHistory history = event.getChannel().getHistoryBefore(event.getMessageId(), purgeAmount).complete();
+        MessageHistory history = channel.getHistoryBefore(channel.getLatestMessageId(), purgeAmount).complete();
 
-        event.getChannel().deleteMessages(history.getRetrievedHistory()).complete();
+        channel.deleteMessages(history.getRetrievedHistory()).complete();
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Messages Purged!");
-        embedBuilder.setDescription(purgeAmount + " messages have been deleted by " + event.getMember().getEffectiveName());
+        embedBuilder.setDescription(purgeAmount + " messages have been deleted by " + author.getEffectiveName());
 
-        event.getChannel().sendMessage(embedBuilder.build()).queue();
+        channel.sendMessage(embedBuilder.build()).queue();
 
-        return "Deleted " + purgeAmount + " messages from channel " + event.getChannel().getName();
+        return "Deleted " + purgeAmount + " messages from channel " + channel.getName();
     }
 
     @Override
