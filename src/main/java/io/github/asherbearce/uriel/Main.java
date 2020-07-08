@@ -1,9 +1,6 @@
 package io.github.asherbearce.uriel;
 
-import io.github.asherbearce.uriel.commands.Command;
-import io.github.asherbearce.uriel.commands.CommandList;
-import io.github.asherbearce.uriel.commands.Mute;
-import io.github.asherbearce.uriel.commands.Warn;
+import io.github.asherbearce.uriel.commands.*;
 import io.github.asherbearce.uriel.database.Database;
 import io.github.asherbearce.uriel.models.SpamTracker;
 import io.github.asherbearce.uriel.settings.BotSettings;
@@ -44,6 +41,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception{
+        //new Settings();
         File tokenFile = new File(FILE_NAME);
         System.out.println("Loading");
 
@@ -52,9 +50,6 @@ public class Main {
 
                 XMLDecoder decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(FILE_NAME)));
                 settings = (BotSettings) decoder.readObject();
-                if (settings.getShowJoinLeaveMessage()) {
-                    leaveJoinNotificationChannel = jda.getTextChannelById(settings.getJoinLeaveTextChannelID());
-                }
                 decoder.close();
                 jda = new JDABuilder(AccountType.BOT).setToken(settings.getBotToken()).build();
                 Thread.sleep(1000);
@@ -117,9 +112,6 @@ public class Main {
                 loginSuccess = true;
 
                 settings = new BotSettings(s);
-                if (settings.getShowJoinLeaveMessage()) {
-                    leaveJoinNotificationChannel = jda.getTextChannelById(settings.getJoinLeaveTextChannelID());
-                }
                 XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(FILE_NAME)));
                 encoder.writeObject(settings);
                 encoder.close();
@@ -269,18 +261,6 @@ public class Main {
                         tracker.warned = false;
                     }
                 }
-            }
-        }
-
-        public void onGuildMemberLeave(GuildMemberLeaveEvent event){
-            if (settings.getShowJoinLeaveMessage()) {
-                leaveJoinNotificationChannel.sendMessage(event.getUser().getName() + settings.getLeaveMessage()).queue();
-            }
-        }
-
-        public void onGuildMemberJoin(GuildMemberJoinEvent event){
-            if (settings.getShowJoinLeaveMessage()) {
-                leaveJoinNotificationChannel.sendMessage(event.getUser().getName() + settings.getJoinMessage()).queue();
             }
         }
     }

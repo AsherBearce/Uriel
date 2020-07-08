@@ -22,44 +22,12 @@ public class BotSettings {
         notifyEvent(CHANGE_TYPE.PREFIX);
     }
 
-    public String getLeaveMessage() {
-        return leaveMessage;
-    }
-
-    public void setLeaveMessage(String leaveMessage) {
-        this.leaveMessage = leaveMessage;
-    }
-
-    public String getJoinMessage() {
-        return joinMessage;
-    }
-
-    public void setJoinMessage(String joinMessage) {
-        this.joinMessage = joinMessage;
-    }
-
     public String getBotToken() {
         return this.botToken;
     }
     public void setBotToken(String token) {
         this.botToken = token;
         notifyEvent(CHANGE_TYPE.TOKEN);
-    }
-
-    public boolean getShowJoinLeaveMessage() {
-        return showJoinLeaveMessage;
-    }
-
-    public void setShowJoinLeaveMessage(boolean showJoinLeaveMessage) {
-        this.showJoinLeaveMessage = showJoinLeaveMessage;
-    }
-
-    public String getJoinLeaveTextChannelID() {
-        return joinLeaveTextChannelID;
-    }
-
-    public void setJoinLeaveTextChannelID(String joinLeaveTextChannelID) {
-        this.joinLeaveTextChannelID = joinLeaveTextChannelID;
     }
 
     public String getMutedRoleID() {
@@ -95,10 +63,6 @@ public class BotSettings {
 
     private String botToken;
     private String commandPrefix;
-    private String leaveMessage;
-    private String joinMessage;
-    private boolean showJoinLeaveMessage = false;
-    private String joinLeaveTextChannelID;
     private String mutedRoleID;
     private String logChannelID;
     private List<SettingsChangedEventHandler> events = new LinkedList<>();
